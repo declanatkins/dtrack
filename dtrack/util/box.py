@@ -152,10 +152,10 @@ class Box:
         return hash((self.cx, self.cy, self.width, self.height, self.angle, self.scale_factor))
     
     def __str__(self):
-        return f"Box({self.cx}, {self.cy}, {self.width}, {self.height}, {self.angle}, {self.scale_factor})"
+        return f"Box(cx={self.cx}, cy={self.cy}, width={self.width}, height={self.height}, angle={self.angle}, scale_factor={self.scale_factor})"
     
     def __repr__(self):
-        return f"Box({self.cx}, {self.cy}, {self.width}, {self.height}, {self.angle}, {self.scale_factor})"
+        return f"Box(cx={self.cx}, cy={self.cy}, width={self.width}, height={self.height}, angle={self.angle}, scale_faactor={self.scale_factor})"
     
     def __eq__(self, other):
         return self.cx == other.cx and self.cy == other.cy and self.width == other.width and self.height == other.height and self.angle == other.angle and self.scale_factor == other.scale_factor

@@ -102,14 +102,14 @@ class TestBox:
         Test the __str__ method.
         """
         box = Box(5, 5, 10, 10, 0, ScaleFactor(10, 10))
-        assert str(box) == "Box(5, 5, 10, 10, 0, ScaleFactor(10, 10))"
+        assert_ignore_whitespace_string_equal(str(box), "Box(cx=5, cy=5, width=10, height=10, angle=0, scale_factor=ScaleFactor(10, 10))")
     
     def test_repr(self):
         """
         Test the __repr__ method.
         """
         box = Box(5, 5, 10, 10, 0, ScaleFactor(10, 10))
-        assert repr(box) == "Box(5, 5, 10, 10, 0, ScaleFactor(10, 10))"
+        assert_ignore_whitespace_string_equal(repr(box), "Box(cx=5, cy=5, width=10, height=10, angle=0, scale_factor=ScaleFactor(10, 10))")
     
     def test_to_coco(self):
         """
