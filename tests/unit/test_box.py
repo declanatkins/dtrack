@@ -1,6 +1,6 @@
 from dtrack.util import Box
 from dtrack.util import ScaleFactor
-
+from tests.assertions import assert_ignore_whitespace_string_equal
 class TestBox:
     """
     Unit tests for the Box class.
@@ -149,3 +149,94 @@ class TestBox:
         box = Box(5, 5, 10, 10, 0, ScaleFactor(10, 10))
         new_box = ScaleFactor(20, 20) * box
         assert new_box == Box(10, 10, 20, 20, 0, ScaleFactor(20, 20))
+    
+    def test_eq(self):
+        """
+        Test the __eq__ method.
+        """
+        box1 = Box(5, 5, 10, 10, 0, ScaleFactor(10, 10))
+        box2 = Box(5, 5, 10, 10, 0, ScaleFactor(10, 10))
+        assert box1 == box2
+    
+    def test_ne(self):
+        """
+        Test the __ne__ method.
+        """
+        box1 = Box(5, 5, 10, 10, 0, ScaleFactor(10, 10))
+        box2 = Box(5, 5, 10, 10, 0, ScaleFactor(20, 20))
+        assert box1 != box2
+    
+    def test_from_json(self):
+        """
+        Test the from_json method.
+        """
+        box = Box.from_json("""{
+            "cx": 5,
+            "cy": 5,
+            "width": 10,
+            "height": 10,
+            "angle": 0,
+            "scale_factor": {
+                "x": 10,
+                "y": 10
+            }
+        }""")
+        assert box == Box(5, 5, 10, 10, 0, ScaleFactor(10, 10))
+    
+    def test_from_dict(self):
+        """
+        Test the from_dict method.
+        """
+        box = Box.from_dict({
+            "cx": 5,
+            "cy": 5,
+            "width": 10,
+            "height": 10,
+            "angle": 0,
+            "scale_factor": {
+                "x": 10,
+                "y": 10
+            }
+        })
+        assert box == Box(5, 5, 10, 10, 0, ScaleFactor(10, 10))
+    
+    def test__hash__(self):
+        """
+        Test the __hash__ method.
+        """
+        box = Box(5, 5, 10, 10, 0, ScaleFactor(10, 10))
+        assert hash(box) == hash((5, 5, 10, 10, 0, ScaleFactor(10, 10)))
+    
+    def test_to_dict(self):
+        """
+        Test the to_dict method.
+        """
+        box = Box(5, 5, 10, 10, 0, ScaleFactor(10, 10))
+        assert box.to_dict() == {
+            "cx": 5,
+            "cy": 5,
+            "width": 10,
+            "height": 10,
+            "angle": 0,
+            "scale_factor": {
+                "x": 10,
+                "y": 10
+            }
+        }
+    
+    def test_to_json(self):
+        """
+        Test the to_json method.
+        """
+        box = Box(5, 5, 10, 10, 0, ScaleFactor(10, 10))
+        assert_ignore_whitespace_string_equal(box.to_json(), """{
+            "cx": 5,
+            "cy": 5,
+            "width": 10,
+            "height": 10,
+            "angle": 0,
+            "scale_factor": {
+                "x": 10,
+                "y": 10
+            }
+        }""")

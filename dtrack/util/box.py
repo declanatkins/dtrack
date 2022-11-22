@@ -1,8 +1,9 @@
 from dataclasses import dataclass
+import json
 from typing import Tuple
 from .scale_factor import ScaleFactor
 from . import geometry
-
+from .json_encoder import DTrackJsonEncoder
 
 @dataclass
 class Box:
@@ -10,21 +11,40 @@ class Box:
     Bounding box of an object in an image.
     """
 
-    centre_x: float
-    centre_y: float
+    cx: float
+    cy: float
     width: float
     height: float
     angle: float
     scale_factor: ScaleFactor
+
+    @classmethod
+    def from_json(cls, json_string):
+        """
+        :param json_string: JSON representation of a bounding box
+        :return: bounding box
+        """
+        dict_object = json.loads(json_string)
+        return cls.from_dict(dict_object)
+    
+    @classmethod
+    def from_dict(cls, d):
+        """
+        :param d: dictionary representation of a bounding box
+        :return: bounding box
+        """
+        if not isinstance(d['scale_factor'], ScaleFactor):
+            d['scale_factor'] = ScaleFactor.from_dict(d['scale_factor'])
+        return cls(**d)
 
     @property
     def top_left(self) -> Tuple[float, float]:
         """
         :return: top left corner of the box
         """
-        base_point = self.centre_x - self.width / 2, self.centre_y - self.height / 2
+        base_point = self.cx - self.width / 2, self.cy - self.height / 2
         if self.rotated:
-           return geometry.rotate_point(*base_point, self.centre_x, self.centre_y, self.angle)
+           return geometry.rotate_point(*base_point, self.cx, self.cy, self.angle)
         else:
             return base_point
     
@@ -33,9 +53,9 @@ class Box:
         """
         :return: top right corner of the box
         """
-        base_point = self.centre_x + self.width / 2, self.centre_y - self.height / 2
+        base_point = self.cx + self.width / 2, self.cy - self.height / 2
         if self.rotated:
-            return geometry.rotate_point(*base_point, self.centre_x, self.centre_y, self.angle)
+            return geometry.rotate_point(*base_point, self.cx, self.cy, self.angle)
         else:
             return base_point
 
@@ -44,9 +64,9 @@ class Box:
         """
         :return: bottom left corner of the box
         """
-        base_point = self.centre_x - self.width / 2, self.centre_y + self.height / 2
+        base_point = self.cx - self.width / 2, self.cy + self.height / 2
         if self.rotated:
-            return geometry.rotate_point(*base_point, self.centre_x, self.centre_y, self.angle)
+            return geometry.rotate_point(*base_point, self.cx, self.cy, self.angle)
         else:
             return base_point
 
@@ -55,9 +75,9 @@ class Box:
         """
         :return: bottom right corner of the box
         """
-        base_point = self.centre_x + self.width / 2, self.centre_y + self.height / 2
+        base_point = self.cx + self.width / 2, self.cy + self.height / 2
         if self.rotated:
-            return geometry.rotate_point(*base_point, self.centre_x, self.centre_y, self.angle)
+            return geometry.rotate_point(*base_point, self.cx, self.cy, self.angle)
         else:
             return base_point
     
@@ -113,22 +133,38 @@ class Box:
         """
         :return: bounding box in YOLO format
         """
-        return self.centre_x, self.centre_y, self.width, self.height
+        return self.cx, self.cy, self.width, self.height
+    
+    def to_json(self):
+        return json.dumps(self.to_dict(), cls=DTrackJsonEncoder)
+
+    def to_dict(self):
+        return {
+            "cx": self.cx,
+            "cy": self.cy,
+            "width": self.width,
+            "height": self.height,
+            "angle": self.angle,
+            "scale_factor": self.scale_factor.to_dict()
+        }
+    
+    def __hash__(self) -> int:
+        return hash((self.cx, self.cy, self.width, self.height, self.angle, self.scale_factor))
     
     def __str__(self):
-        return f"Box({self.centre_x}, {self.centre_y}, {self.width}, {self.height}, {self.angle}, {self.scale_factor})"
+        return f"Box({self.cx}, {self.cy}, {self.width}, {self.height}, {self.angle}, {self.scale_factor})"
     
     def __repr__(self):
-        return f"Box({self.centre_x}, {self.centre_y}, {self.width}, {self.height}, {self.angle}, {self.scale_factor})"
+        return f"Box({self.cx}, {self.cy}, {self.width}, {self.height}, {self.angle}, {self.scale_factor})"
     
     def __eq__(self, other):
-        return self.centre_x == other.centre_x and self.centre_y == other.centre_y and self.width == other.width and self.height == other.height and self.angle == other.angle and self.scale_factor == other.scale_factor
+        return self.cx == other.cx and self.cy == other.cy and self.width == other.width and self.height == other.height and self.angle == other.angle and self.scale_factor == other.scale_factor
     
     def __mul__(self, other):
         if isinstance(other, ScaleFactor):
             scale_x = other.x / self.scale_factor.x
             scale_y = other.y / self.scale_factor.y
-            return Box(self.centre_x * scale_x, self.centre_y * scale_y, self.width * scale_x, self.height * scale_y, self.angle, other)
+            return Box(self.cx * scale_x, self.cy * scale_y, self.width * scale_x, self.height * scale_y, self.angle, other)
         else:
             raise TypeError(f"Cannot multiply Box by {type(other)}")
     
@@ -151,4 +187,4 @@ class Box:
         :param angle: angle to rotate by in degrees
         :return: rotated box
         """
-        return Box(self.centre_x, self.centre_y, self.width, self.height, self.angle + angle, self.scale_factor)
+        return Box(self.cx, self.cy, self.width, self.height, self.angle + angle, self.scale_factor)

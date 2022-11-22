@@ -1,3 +1,5 @@
+import json
+
 class ScaleFactor:
     """
     Scale factor for a detection, image or bounding box.
@@ -10,6 +12,25 @@ class ScaleFactor:
         """
         self.x = x
         self.y = y
+
+    @classmethod
+    def from_json(cls, json_string):
+        """
+        :param json_string: JSON representation of a scale factor
+        :return: scale factor
+        """
+        return cls(**json.loads(json_string))
+    
+    @classmethod
+    def from_dict(cls, d):
+        """
+        :param d: dictionary representation of a scale factor
+        :return: scale factor
+        """
+        return cls(**d)
+
+    def __hash__(self):
+        return hash((self.x, self.y))
     
     def __str__(self):
         return f"ScaleFactor({self.x}, {self.y})"
@@ -23,3 +44,17 @@ class ScaleFactor:
     def __ne__(self, other):
         return not self.__eq__(other)
     
+    def to_json(self):
+        """
+        :return: JSON representation of the scale factor
+        """
+        return json.dumps(self.__dict__())
+    
+    def to_dict(self):
+        """
+        :return: dictionary representation of the scale factor
+        """
+        return {
+            'x': self.x,
+            'y': self.y
+        }
