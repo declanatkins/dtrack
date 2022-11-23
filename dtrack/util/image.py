@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List
 import cv2
 import numpy as np
 from .scale_factor import ScaleFactor
@@ -10,21 +10,29 @@ class Image:
     Class for images.
     """
 
-    def __init__(self, image: Union[np.ndarray, str]):
+    def __init__(self, filename: str, image_content: np.ndarray=None):
         """
         :param image: image
         """
-        self._image = image
+        self._filename = filename
+        self._image_content = image_content
         self._detections = []
+
+    @property
+    def filename(self) -> str:
+        """
+        :return: filename
+        """
+        return self._filename
 
     @property
     def image(self) -> np.ndarray:
         """
         :return: image
         """
-        if isinstance(self._image, str):
-            self._image = np.array(cv2.imread(self._image))
-        return self._image
+        if self._image_content is None:
+            self._image_content = np.array(cv2.imread(self.filename))
+        return self._image_content
     
     @property
     def scale_factor(self) -> ScaleFactor:
@@ -41,10 +49,10 @@ class Image:
         return self._detections
 
     def __str__(self):
-        return f"Image({self.image.shape})"
+        return f"Image(filename={self.filename} shape={self.image.shape} detections={self.detections})"
     
     def __repr__(self):
-        return f"Image({self.image.shape})"
+        return f"Image(filename={self.filename} shape={self.image.shape} detections={self.detections})"
     
     def __eq__(self, other):
         return np.array_equal(self.image, other.image)

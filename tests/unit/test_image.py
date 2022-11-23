@@ -3,6 +3,7 @@ from dtrack.util.image import Image
 from dtrack.util.scale_factor import ScaleFactor
 from dtrack.util.detection import Detection
 from dtrack.util.box import Box
+from tests.assertions import assert_ignore_whitespace_string_equal
 
 class TestImage:
 
@@ -45,6 +46,23 @@ class TestImage:
         Test the lazy image load functionality.
         """
         image = Image("tests/data/test.jpg")
-        assert isinstance(image._image, str)
+        assert image._image_content is None
         image.image
-        assert isinstance(image._image, np.ndarray)
+        assert isinstance(image._image_content, np.ndarray)
+    
+    def test_add_detections(self):
+        """
+        Test the add_detections method.
+        """
+        image = Image("tests/data/test.jpg")
+        assert image.detections == []
+
+        image.add_detections([Detection("test", 0.5, Box(0, 0, 10, 10, 0, ScaleFactor(100, 100)), None)])
+        assert image.detections == [Detection("test", 0.5, Box(0, 0, 10, 10, 0, ScaleFactor(100, 100)), None)]
+    
+    def test_str(self):
+        """
+        Test the __str__ method.
+        """
+        image = Image("tests/data/test.jpg")
+        assert_ignore_whitespace_string_equal(str(image), "Image(filename=tests/data/test.jpg shape=(100, 100) detections=[])")
