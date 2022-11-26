@@ -12,6 +12,7 @@ class Detection:
     Detection of an object in an image.
     """
     label: str
+    subclass_label: str
     confidence: float
     box: Box
     mask: np.ndarray
@@ -39,10 +40,10 @@ class Detection:
         return hash((self.label, self.confidence, self.box, self.mask))
 
     def __str__(self):
-        return f"Detection(box={self.box}, label={self.label}, confidence={self.confidence})"
+        return f"Detection(box={self.box}, label={self.label}, subclass_label={self.subclass_label}, confidence={self.confidence})"
     
     def __repr__(self):
-        return f"Detection(box={self.box}, label={self.label}, confidence={self.confidence})"
+        return f"Detection(box={self.box}, label={self.label}, subclass_label={self.subclass_label}, confidence={self.confidence})"
     
     def __eq__(self, other):
         return self.label == other.label and self.confidence == other.confidence and self.box == other.box
@@ -62,6 +63,7 @@ class Detection:
         """
         return {
             'label': self.label,
+            'subclass_label': self.subclass_label,
             'confidence': self.confidence,
             'box': self.box.to_dict(),
             'mask': self.mask

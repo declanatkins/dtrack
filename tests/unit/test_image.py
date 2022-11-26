@@ -28,8 +28,8 @@ class TestImage:
         image = Image("tests/data/test.jpg")
         assert image.detections == []
 
-        image.add_detection(Detection("test", 0.5, Box(0, 0, 10, 10, 0, ScaleFactor(100, 100)), None))
-        assert image.detections == [Detection("test", 0.5, Box(0, 0, 10, 10, 0, ScaleFactor(100, 100)), None)]
+        image.add_detection(Detection("test", "test", 0.5, Box(0, 0, 10, 10, 0, ScaleFactor(100, 100)), None))
+        assert image.detections == [Detection("test", "test", 0.5, Box(0, 0, 10, 10, 0, ScaleFactor(100, 100)), None)]
     
     def test_add_detection(self):
         """
@@ -38,8 +38,8 @@ class TestImage:
         image = Image("tests/data/test.jpg")
         assert image.detections == []
 
-        image.add_detection(Detection("test", 0.5, Box(0, 0, 10, 10, 0, ScaleFactor(100, 100)), None))
-        assert image.detections == [Detection("test", 0.5, Box(0, 0, 10, 10, 0, ScaleFactor(100, 100)), None)]
+        image.add_detection(Detection("test", "test", 0.5, Box(0, 0, 10, 10, 0, ScaleFactor(100, 100)), None))
+        assert image.detections == [Detection("test", "test", 0.5, Box(0, 0, 10, 10, 0, ScaleFactor(100, 100)), None)]
     
     def test_lazy_image_load_funtionality(self):
         """
@@ -57,8 +57,8 @@ class TestImage:
         image = Image("tests/data/test.jpg")
         assert image.detections == []
 
-        image.add_detections([Detection("test", 0.5, Box(0, 0, 10, 10, 0, ScaleFactor(100, 100)), None)])
-        assert image.detections == [Detection("test", 0.5, Box(0, 0, 10, 10, 0, ScaleFactor(100, 100)), None)]
+        image.add_detections([Detection("test", "test", 0.5, Box(0, 0, 10, 10, 0, ScaleFactor(100, 100)), None)])
+        assert image.detections == [Detection("test", "test", 0.5, Box(0, 0, 10, 10, 0, ScaleFactor(100, 100)), None)]
     
     def test_str(self):
         """

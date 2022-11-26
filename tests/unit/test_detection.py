@@ -23,6 +23,7 @@ class TestDetection:
                 }
             },
             "label": "test",
+            "subclass_label": "test",
             "confidence": 0.5,
             "mask": null
         }"""
@@ -56,6 +57,7 @@ class TestDetection:
                 }
             },
             "label": "test",
+            "subclass_label": "test",
             "confidence": 0.5,
             "mask": None
         }
@@ -76,37 +78,37 @@ class TestDetection:
         """
         Test the __eq__ method.
         """
-        d1 = Detection("test", 0.5, Box(0.0, 0.0, 10.0, 10.0, 0.0, ScaleFactor(1.0, 1.0)), None)
-        d2 = Detection("test", 0.5, Box(0.0, 0.0, 10.0, 10.0, 0.0, ScaleFactor(1.0, 1.0)), None)
+        d1 = Detection("test", "test", 0.5, Box(0.0, 0.0, 10.0, 10.0, 0.0, ScaleFactor(1.0, 1.0)), None)
+        d2 = Detection("test", "test", 0.5, Box(0.0, 0.0, 10.0, 10.0, 0.0, ScaleFactor(1.0, 1.0)), None)
         assert d1 == d2
     
     def test__ne__(self):
         """
         Test the __ne__ method.
         """
-        d1 = Detection("test", 0.5, Box(0.0, 0.0, 10.0, 10.0, 0.0, ScaleFactor(1.0, 1.0)), None)
-        d2 = Detection("test", 0.5, Box(1.0, 0.0, 10.0, 10.0, 0.0, ScaleFactor(1.0, 1.0)), None)
+        d1 = Detection("test", "test", 0.5, Box(0.0, 0.0, 10.0, 10.0, 0.0, ScaleFactor(1.0, 1.0)), None)
+        d2 = Detection("test", "test", 0.5, Box(1.0, 0.0, 10.0, 10.0, 0.0, ScaleFactor(1.0, 1.0)), None)
         assert d1 != d2
 
     def test__str__(self):
         """
         Test the __str__ method.
         """
-        d1 = Detection("test", 0.5, Box(0.0, 0.0, 10.0, 10.0, 0.0, ScaleFactor(1.0, 1.0)), None)
-        assert_ignore_whitespace_string_equal(str(d1), "Detection(box=Box(cx=0.0, cy=0.0, width=10.0, height=10.0, angle=0.0, scale_factor=ScaleFactor(x=1.0, y=1.0)), label=test, confidence=0.5, mask=None)")
+        d1 = Detection("test", "test", 0.5, Box(0.0, 0.0, 10.0, 10.0, 0.0, ScaleFactor(1.0, 1.0)), None)
+        assert_ignore_whitespace_string_equal(str(d1), "Detection(box=Box(cx=0.0, cy=0.0, width=10.0, height=10.0, angle=0.0, scale_factor=ScaleFactor(x=1.0, y=1.0)), label=test, subclass_label=test, confidence=0.5, mask=None)")
     
     def test__repr__(self):
         """
         Test the __repr__ method.
         """
-        d1 = Detection("test", 0.5, Box(0.0, 0.0, 10.0, 10.0, 0.0, ScaleFactor(1.0, 1.0)), None)
-        assert_ignore_whitespace_string_equal(repr(d1), "Detection(box=Box(cx=0.0, cy=0.0, width=10.0, height=10.0, angle=0.0, scale_factor=ScaleFactor(x=1.0, y=1.0)), label=test, confidence=0.5, mask=None)")
+        d1 = Detection("test", "test", 0.5, Box(0.0, 0.0, 10.0, 10.0, 0.0, ScaleFactor(1.0, 1.0)), None)
+        assert_ignore_whitespace_string_equal(repr(d1), "Detection(box=Box(cx=0.0, cy=0.0, width=10.0, height=10.0, angle=0.0, scale_factor=ScaleFactor(x=1.0, y=1.0)), label=test, subclass_label=test, confidence=0.5, mask=None)")
     
     def test_to_dict(self):
         """
         Test the to_dict method.
         """
-        d1 = Detection("test", 0.5, Box(0.0, 0.0, 10.0, 10.0, 0.0, ScaleFactor(1.0, 1.0)), None)
+        d1 = Detection("test", "test", 0.5, Box(0.0, 0.0, 10.0, 10.0, 0.0, ScaleFactor(1.0, 1.0)), None)
         d2 = d1.to_dict()
         assert d2["box"]["cx"] == 0.0
         assert d2["box"]["cy"] == 0.0
@@ -114,6 +116,7 @@ class TestDetection:
         assert d2["box"]["height"] == 10.0
         assert d2["box"]["angle"] == 0.0
         assert d2["label"] == "test"
+        assert d2["subclass_label"] == "test"
         assert d2["confidence"] == 0.5
         assert d2["mask"] is None
         assert d2["box"]["scale_factor"]["x"] == 1.0
