@@ -35,6 +35,7 @@ class BaseTrackableObject(ABC):
         self._mask = mask
         self._features = features
         self._location_history = [(bounding_box.cx, bounding_box.cy)]
+        self._tracking_attributes = tracking_attributes
     
     @property
     def class_name(self) -> str:
@@ -164,4 +165,25 @@ class BaseTrackableObject(ABC):
         """
         raise NotImplementedError("BaseTrackableObject is an abstract class.")
     
-    def    
+    def get_tracking_attribute(self, attribute_name: str):
+        """
+        Get a tracking attribute.
+
+        :param attribute_name: attribute name
+        :return: attribute value
+        """
+        try:
+            return self._tracking_attributes[attribute_name]
+        except KeyError:
+            raise AttributeError(f"Attribute '{attribute_name}' not found.")
+        
+    def set_tracking_attribute(self, attribute_name: str, attribute_value):
+        """
+        Set a tracking attribute.
+
+        :param attribute_name: attribute name
+        :param attribute_value: attribute value
+        """
+        if not attribute_name in self._tracking_attributes:
+            raise AttributeError(f"Attribute '{attribute_name}' not found.")
+        self._tracking_attributes[attribute_name] = attribute_value
