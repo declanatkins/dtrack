@@ -5,7 +5,6 @@ from .base_predictor import BaseMovementPredictor
 from ...util.singleton import Singleton
 
 
-
 class GlobalKNNPredictor(BaseMovementPredictor, Singleton):
     """
     Global KNN movement predictor. This class is a Singleton.
@@ -158,3 +157,9 @@ class GlobalKNNPredictor(BaseMovementPredictor, Singleton):
     @classmethod
     def from_json(cls, data: str):
         return cls.from_dict(json.loads(data))
+    
+    def __str__(self):
+        return f"KNNPredictor(k={self.k}, max_history={self.max_history})"
+    
+    def __repr__(self):
+        return self.__str__()
