@@ -7,7 +7,7 @@ from ..movement.base_predictor import BaseMovementPredictor
 from ..distance.features import DistanceFeatures
 
 
-class BaseTrackableObject(ABC):
+class TrackableObject(ABC):
     """
     Abstract class for trackable objects.
     """

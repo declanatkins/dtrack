@@ -4,10 +4,10 @@ from ...util.box import Box
 from ...util.detection import Detection
 from ..movement.base_predictor import BaseMovementPredictor
 from ..distance.features import DistanceFeatures
-from .base_object import BaseTrackableObject
+from .base_object import TrackableObject
 
 
-class DefaultTrackableObject(BaseTrackableObject):
+class DefaultTrackableObject(TrackableObject):
     """
     Default trackable object.
     """
