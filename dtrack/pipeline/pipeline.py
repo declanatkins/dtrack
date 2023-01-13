@@ -20,7 +20,9 @@ class Pipeline:
         """Runs the pipeline.
         """
         for step in self.steps:
-            context.pipeline_step_results[step.name] = step(context)
+            step_result = step(context)
+            if step_result is not None:
+                context.pipeline_step_results[step.name] = step(context)
         return context
     
     def __str__(self) -> str:
