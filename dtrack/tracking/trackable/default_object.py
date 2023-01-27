@@ -2,7 +2,7 @@ import json
 import numpy as np
 from ...util.box import Box
 from ...util.detection import Detection
-from ..movement.base_predictor import BaseMovementPredictor
+from ..movement.predictor import MovementPredictor
 from ..distance.features import DistanceFeatures
 from .base_object import TrackableObject
 
@@ -17,7 +17,8 @@ class DefaultTrackableObject(TrackableObject):
             class_name: str,
             subclass_name: str,
             bounding_box: Box,
-            movement_predictor: BaseMovementPredictor,
+            movement_predictor: MovementPredictor,
+            first_seen: int,
             mask: np.ndarray = None,
             features: DistanceFeatures = None,
             **tracking_attributes
@@ -37,6 +38,7 @@ class DefaultTrackableObject(TrackableObject):
             subclass_name,
             bounding_box,
             movement_predictor,
+            first_seen,
             mask,
             features,
             **tracking_attributes
@@ -84,14 +86,14 @@ class DefaultTrackableObject(TrackableObject):
             data["class_name"],
             data["subclass_name"],
             Box.from_dict(data["bounding_box"]),
-            BaseMovementPredictor.from_dict(data["movement_predictor"]),
+            MovementPredictor.from_dict(data["movement_predictor"]),
             np.array(data["mask"]) if data["mask"] is not None else None,
             DistanceFeatures.from_dict(data["features"]) if data["features"] is not None else None,
             **data["tracking_attributes"]
         )
     
     @classmethod
-    def from_detection(cls, detection: Detection, movement_predictor: BaseMovementPredictor):
+    def from_detection(cls, detection: Detection, movement_predictor: MovementPredictor, first_seen: int):
         """
         Create a trackable object from a detection.
 
@@ -104,12 +106,13 @@ class DefaultTrackableObject(TrackableObject):
             detection.subclass_name,
             detection.bounding_box,
             movement_predictor,
+            first_seen,
             detection.mask,
             detection.features,
             **detection.tracking_attributes
         )
     
-    def update(self, detection: Detection):
+    def update(self, detection: Detection, frame_number: int):
         """
         Update the trackable object with a new detection.
         """
@@ -119,5 +122,6 @@ class DefaultTrackableObject(TrackableObject):
         self._location_history.append((detection.bounding_box.cx, detection.bounding_box.cy))
         self._tracking_attributes = detection.tracking_attributes
         self._subclass_name.append(detection.subclass_name)
+        self._last_seen = frame_number
 
     

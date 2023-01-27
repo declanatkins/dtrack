@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, List, Tuple
+from typing import Any, Dict, List, Tuple, Type
 from ..context import ApplicationContext
 from ..util import Detection, Image
 from ..tracking.trackable import TrackableObject
@@ -240,3 +240,19 @@ class DeletedTrackedObjectsOfClassWithKeys(PipelineArgumentWithSpecification):
 
     def evaluate(self, context):
         return [(key, context.trackable_objects[key]) for key in context.deleted_keys if context.trackable_objects[key].class_name == self.specification]
+
+
+class TrackedObjectTypes(PipelineArgument):
+    """A pipeline argument that gives the types for tracked objects of different classes.
+    """
+
+    def evaluate(self, context) -> Dict[str, Type[TrackableObject]]:
+        return context.tracked_object_classes
+
+
+class TrackedObjectTypeForClass(PipelineArgumentWithSpecification):
+    """A pipeline argument that gives the type for tracked objects of a specific class.
+    """
+
+    def evaluate(self, context) -> Type[TrackableObject]:
+        return context.tracked_object_classes[self.specification]

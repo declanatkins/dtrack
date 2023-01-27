@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
-from ..util import Detection
+from typing import Union
 from .features import DistanceFeatures
-from ..trackable.base_object import BaseTrackableObject
+from ..trackable.base_object import TrackableObject
+from ...util import Detection
+
 
 class DistanceAlgorithm(ABC):
     """
@@ -11,31 +13,33 @@ class DistanceAlgorithm(ABC):
     FEATURES_TYPE = DistanceFeatures
 
     @abstractmethod
-    def distance(self, detection1: Detection, detection2: Detection) -> float:
+    def distance(self, trackable_object: TrackableObject, detection: Detection) -> float:
         """
-        Calculate the distance between two detections.
+        Calculates the distance between a trackable object and a detection.
 
-        :param detection1: first detection
-        :param detection2: second detection
-        :return: distance between the detections
+        Args:
+            trackable_object (TrackableObject): The trackable object.
+            detection (Detection): The detection.
+
+        Returns:
+            float: The distance.
         """
-        raise NotImplementedError("DistanceAlgorithm is an abstract class.")
+        pass
     
-    def compute_features(self, trackable_object: BaseTrackableObject) -> DistanceFeatures:
+    @abstractmethod
+    def compute_features(self, target: Union[TrackableObject, Detection]) -> DistanceFeatures:
         """
-        Compute the distance features for the given trackable object.
+        Computes the distance features of a trackable object or a detection.
 
-        :param trackable_object: trackable object to compute the distance features for
-        :return: distance features for the trackable object
-        """
-        return self.FEATURES_TYPE(trackable_object)
+        Args:
+            target (Union[TrackableObject, Detection]): The trackable object or the detection.
 
-    def __call__(self, detection1: Detection, detection2: Detection) -> float:
+        Returns:
+            DistanceFeatures: The distance features.
         """
-        Call the distance method.
-
-        :param detection1: first detection
-        :param detection2: second detection
-        :return: distance between the detections
-        """
-        return self.distance(detection1, detection2)
+        if isinstance(target, TrackableObject):
+            return self.FEATURES_TYPE.create_from_trackable_object(target)
+        elif isinstance(target, Detection):
+            return self.FEATURES_TYPE.create_from_detection(target)
+        else:
+            raise TypeError(f"Unsupported type: {type(target)}")

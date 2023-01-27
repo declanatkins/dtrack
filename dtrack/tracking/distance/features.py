@@ -1,52 +1,61 @@
 from abc import ABC, abstractmethod
+from ..trackable.base_object import TrackableObject
+from ...util import Detection
 
 
 class DistanceFeatures(ABC):
     """
     Abstract class for distance features.
     """
+    @abstractmethod
+    @classmethod
+    def from_json(cls, json_object: dict) -> 'DistanceFeatures':
+        """
+        Creates a new distance features object from a JSON object.
+
+        Args:
+            json_object (dict): The JSON object.
+
+        Returns:
+            DistanceFeatures: The distance features object.
+        """
+        pass
 
     @abstractmethod
-    def __call__(self, detection1, detection2):
+    @classmethod
+    def create_from_detection(cls, detection: Detection) -> 'DistanceFeatures':
         """
-        Calculate the distance features between two detections.
+        Creates a new distance features object from a detection.
 
-        :param detection1: first detection
-        :param detection2: second detection
-        :return: distance features between the detections
-        """
-        raise NotImplementedError("DistanceFeatures is an abstract class.")
+        Args:
+            detection (Detection): The detection.
 
-    @abstractmethod
-    def to_dict(self):
+        Returns:
+            DistanceFeatures: The distance features object.
         """
-        Convert the distance features to a dictionary.
-
-        :return: dictionary representation of the distance features
-        """
-        raise NotImplementedError("DistanceFeatures is an abstract class.")
+        pass
     
     @abstractmethod
-    def to_json(self):
+    @classmethod
+    def create_from_trackable_object(cls, trackable_object: TrackableObject) -> 'DistanceFeatures':
         """
-        Convert the distance features to a JSON string.
+        Creates a new distance features object from a trackable object.
 
-        :return: JSON string representation of the distance features
+        Args:
+            trackable_object (TrackableObject): The trackable object.
+
+        Returns:
+            DistanceFeatures: The distance features object.
         """
-        raise NotImplementedError("DistanceFeatures is an abstract class.")
+        pass
+
     
-    @classmethod
     @abstractmethod
-    def from_dict(cls, d):
+    def to_json(self) -> dict:
         """
-        Create distance features from a dictionary.
-        """
-        raise NotImplementedError("DistanceFeatures is an abstract class.")
+        Converts the distance features to a JSON object.
 
-    @classmethod
-    @abstractmethod
-    def from_json(cls, json):
+        Returns:
+            dict: The JSON object.
         """
-        Create distance features from a JSON string.
-        """
-        raise NotImplementedError("DistanceFeatures is an abstract class.")
+        pass

@@ -3,7 +3,7 @@ from collections import Counter
 from typing import List, Tuple
 import numpy as np
 from ...util import Box, Detection
-from ..movement.base_predictor import BaseMovementPredictor
+from ..movement.predictor import MovementPredictor
 from ..distance.features import DistanceFeatures
 
 
@@ -17,7 +17,8 @@ class TrackableObject(ABC):
             class_name: str,
             subclass_name: str,
             bounding_box: Box,
-            movement_predictor: BaseMovementPredictor,
+            movement_predictor: MovementPredictor,
+            first_seen: int,
             mask: np.ndarray = None,
             features: DistanceFeatures = None,
             **tracking_attributes
@@ -40,6 +41,8 @@ class TrackableObject(ABC):
         self._location_history = [(bounding_box.cx, bounding_box.cy)]
         self._tracking_attributes = tracking_attributes
         self._movement_predictor = movement_predictor
+        self._first_seen = first_seen
+        self._last_seen = first_seen
     
     @property
     def class_name(self) -> str:
@@ -98,10 +101,24 @@ class TrackableObject(ABC):
         :return: current location
         """
         return self._location_history[-1]
+    
+    @property
+    def first_seen(self) -> int:
+        """
+        :return: first seen
+        """
+        return self._first_seen
+    
+    @property
+    def last_seen(self) -> int:
+        """
+        :return: last seen
+        """
+        return self._last_seen
 
     @classmethod
     @abstractmethod
-    def from_detection(cls, detection: Detection, movement_predictor: BaseMovementPredictor):
+    def from_detection(cls, detection: Detection, movement_predictor: MovementPredictor, first_seen: int):
         """
         Create a trackable object from a detection.
 
@@ -152,7 +169,7 @@ class TrackableObject(ABC):
         raise NotImplementedError("BaseTrackableObject is an abstract class.")
     
     @abstractmethod
-    def update(self, detection: Detection):
+    def update(self, detection: Detection, frame_number: int):
         """
         Update the trackable object with a new detection.
 

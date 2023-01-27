@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, Tuple
 
 
-class BaseMovementPredictor(ABC):
+class MovementPredictor(ABC):
     """
     Abstract class for movement predictors.
     """

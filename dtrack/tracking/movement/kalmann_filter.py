@@ -1,9 +1,9 @@
 from typing import List, Tuple
 import numpy as np
-from .base_predictor import BaseMovementPredictor
+from .predictor import MovementPredictor
 
 
-class KalmannFilter(BaseMovementPredictor):
+class KalmannFilter(MovementPredictor):
     """
     Kalmann filter movement predictor.
     """

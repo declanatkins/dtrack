@@ -5,6 +5,8 @@ from .io.stream import ImageStream
 from .pipeline import Pipeline
 from .pipeline.arguments import PipelineArgument
 from .pipeline.step import PipelineStep
+from .tracking.movement.predictor import MovementPredictor
+from .tracking.movement.kalmann_filter import KalmannFilter
 from .tracking.trackable import TrackableObject
 from .tracking.trackable.default_object import DefaultTrackableObject
 from .util import Detection, Image
@@ -29,7 +31,15 @@ class DTrackApplication:
                 Type[TrackableObject]
             ]=DefaultTrackableObject,
             tracking_attributes: Dict[str, Any]=None,
-            result_formatter: ResultFormatter=DefaultResultFormatter()
+            result_formatter: ResultFormatter=DefaultResultFormatter(),
+            movement_predictor_class: Type[MovementPredictor]=KalmannFilter,
+            movement_predictor_classes: Union[
+                List[Type[MovementPredictor]],
+                Dict[str, Type[MovementPredictor]],
+                Type[MovementPredictor]
+            ]=KalmannFilter,
+            delete_after: int=5,
+            delete_after_by_class: Dict[str, int]=None,
     ):
         """Creates a new DTrack Application.
 
@@ -44,6 +54,16 @@ class DTrackApplication:
                 Used if tracked_class is specified. Defaults to DefaultTrackableObject.
             tracked_object_classes (Union[List[Type[TrackableObject]], Dict[str, Type[TrackableObject]], Type[TrackableObject]], optional): 
                 The classes of tracked objects to use. Used if tracked_classes is specified. Defaults to None.
+            tracking_attributes (Dict[str, Any], optional): Additional attributes to add to the application.
+                Defaults to None.
+            result_formatter (ResultFormatter, optional): The result formatter to use. Defaults to DefaultResultFormatter().
+            movement_predictor_class (Type[MovementPredictor], optional): The movement predictor class to use.
+                Defaults to KalmannFilter. Used if tracked_class is specified.
+            movement_predictor_classes (Union[List[Type[MovementPredictor]], Dict[str, Type[MovementPredictor]], Type[MovementPredictor]], optional):
+                The movement predictor classes to use. Defaults to KalmannFilter. Used if tracked_classes is specified.
+            delete_after (int, optional): The number of frames to wait before deleting a trackable object. Defaults to 5.
+            delete_after_by_class (Dict[str, int], optional): The number of frames to wait before deleting a trackable object by class.
+                Defaults to None.
         """
         self.pipeline = pipeline
         self.application_name = application_name
@@ -57,6 +77,8 @@ class DTrackApplication:
         elif tracked_class is not None:
             self.tracked_classes = [tracked_class]
             self.tracked_object_classes = {tracked_class: tracked_object_class}
+            self.movement_predictor_classes = {tracked_class: movement_predictor_class}
+            self.delete_after_by_class = {tracked_class: delete_after}
         elif tracked_classes is not None:
             self.tracked_classes = tracked_classes
             if isinstance(tracked_object_classes, list):
@@ -69,6 +91,26 @@ class DTrackApplication:
             else:
                 self.tracked_object_classes = {
                     tracked_class: tracked_object_classes
+                    for tracked_class in tracked_classes
+                }
+            if isinstance(movement_predictor_classes, list):
+                self.movement_predictor_classes = {
+                    tracked_class: movement_predictor_class
+                    for tracked_class, movement_predictor_class in zip(tracked_classes, movement_predictor_classes)
+                }
+            elif isinstance(movement_predictor_classes, dict):
+                self.movement_predictor_classes = movement_predictor_classes
+            else:
+                self.movement_predictor_classes = {
+                    tracked_class: movement_predictor_classes
+                    for tracked_class in tracked_classes
+                }
+            
+            if delete_after_by_class is not None:
+                self.delete_after_by_class = delete_after_by_class
+            else:
+                self.delete_after_by_class = {
+                    tracked_class: delete_after
                     for tracked_class in tracked_classes
                 }
         else:
@@ -94,14 +136,17 @@ class DTrackApplication:
             context = ApplicationContext(
                 frame_image=frame_image,
                 frame_number=self.frame_number,
-                object_detections=[],
+                object_detections=None,
                 trackable_objects=self.tracked_objects,
-                matched_keys=[],
-                unmatched_keys=[],
-                new_keys=[],
-                deleted_keys=[],
+                matched_keys=None,
+                unmatched_keys=None,
+                new_keys=None,
+                deleted_keys=None,
                 tracking_attributes=self.tracking_attributes,
-                pipeline_step_results={}
+                pipeline_step_results={},
+                tracked_object_classes=self.tracked_object_classes,
+                movement_predictors_by_class=self.movement_predictor_classes,
+                delete_after_by_class=self.delete_after_by_class,
             )
             context = self.pipeline.run(context)
             self.frame_number += 1

@@ -1,6 +1,7 @@
 from dataclasses import dataclass
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Type
 from .util import Detection, Image
+from .tracking.movement.predictor import MovementPredictor
 from .tracking.trackable import TrackableObject
 
 
@@ -16,6 +17,9 @@ class ApplicationContext:
     matched_keys: List[str]
     unmatched_keys: List[str]
     new_keys: List[str]
-    deleted_keys: List[str]
+    deleted_objects: Dict[str, TrackableObject]
     tracking_attributes: Dict[str, Any]
     pipeline_step_results: Dict[str, Any]
+    tracked_object_classes: Dict[str, Type[TrackableObject]]
+    movement_predictors_by_class: Dict[str, Type[MovementPredictor]]
+    delete_after_by_class: Dict[str, int]

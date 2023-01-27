@@ -1,10 +1,10 @@
 from typing import List, Tuple
 import json
 import numpy as np
-from .base_predictor import BaseMovementPredictor
+from .predictor import MovementPredictor
 
 
-class LocalKNNPredictor(BaseMovementPredictor):
+class LocalKNNPredictor(MovementPredictor):
     """
     Local KNN movement predictor.
     """

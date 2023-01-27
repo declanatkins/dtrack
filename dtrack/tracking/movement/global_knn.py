@@ -1,11 +1,11 @@
 import json
 from typing import List, Tuple
 import numpy as np
-from .base_predictor import BaseMovementPredictor
+from .predictor import MovementPredictor
 from ...util.singleton import Singleton
 
 
-class GlobalKNNPredictor(BaseMovementPredictor, Singleton):
+class GlobalKNNPredictor(MovementPredictor, Singleton):
     """
     Global KNN movement predictor. This class is a Singleton.
     """
